@@ -41,6 +41,11 @@ stages:
           buildType: 'current'
           artifactName: 'node_modules'
           targetPath: '$(Pipeline.Workspace)'
-      - script: which pnpm
+      - script: |
+         npm install --prefix=$HOME/.local -g pnpm@9.7.1 
+         pnpm config set store-dir $(pnpm_config_cache)
+        displayName: Install PNPM
+      - script: |
+         pnpx nx build shell 
 
 
