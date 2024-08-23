@@ -138,14 +138,15 @@ jobs:
         
       - task: Cache@2
         inputs:
-          key: 'nx-cache | $(Build.SourceBranchName) | .nx/cache/run.json'
+          key: 'nx-cache | $(Build.SourceBranchName)'
           path: $(Build.SourcesDirectory)/.nx/cache
           restoreKeys: |
              nx-cache | $(Build.SourceBranchName)
         displayName: Cache Nx Cache
         continueOnError: true
         condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
-      
+      - script: |
+          echo $home_spa_changed $login_spa_changed $shellChanged
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: 'dist'
