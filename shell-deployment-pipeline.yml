@@ -5,25 +5,40 @@ trigger:
     include:
     - apps/shell/**
 
+variables:
+  CI: 'true'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    NX_BRANCH: $(System.PullRequest.PullRequestNumber)
+    TARGET_BRANCH: $[replace(variables['System.PullRequest.TargetBranch'],'refs/heads/','origin/')]
+    BASE_SHA: $(git merge-base $(TARGET_BRANCH) HEAD)
+  ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    NX_BRANCH: $(Build.SourceBranchName)
+    BASE_SHA: $(git rev-parse HEAD~1)
+  HEAD_SHA: $(git rev-parse HEAD)
 
-resources:
-  pipelines:
-    - pipeline: basepipeline
-      source: base-pipeline
       
 pool:
   vmImage: ubuntu-latest
 
+stages:
+- stage: BundleDependencies
+  jobs:
+  - template: base_template.yml
+    parameters:
+      NX_BRANCH: NX_BRANCH
+      TARGET_BRANCH: TARGET_BRANCH
+      BASE_SHA: BASE_SHA
+      HEAD_SHA: HEAD_SHA
 
-jobs:
-- job: BuildShell
-  steps:
-    - script: |
-        curl -X POST \
-         -u $(System.AccessToken): \
-         -H "Content-Type: application/json" \
-         -d '{"resources": {"repositories": {"self": {"refName": "refs/heads/main"}}}}' \
-         https://dev.azure.com/xdevrspace/Federated_App_Deployments/_apis/pipelines/shell-deployment-pipeline/runs?api-version=7.1-preview.1
-      # condition: and(succeeded(), containsValue(variables['Build.SourceVersionPaths'], 'apps/shell'))
-        
+- stage: Build_Shell
+  jobs: 
+   - job: Execute_Nx_Build
+     steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'node_modules'
+          targetPath: '$(Pipeline.Workspace)'
+      - script: pnpx nx build shell
+
 
