@@ -77,10 +77,6 @@ jobs:
       - script: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
       - script: pnpm install --frozen-lockfile
-      - task: Bash@3
-        inputs:
-          targetType: 'inline'
-          script: 'cp -LR node_modules tmp && rm -rf node_modules && mv tmp node_modules'
     
       - script: git branch --track main origin/main
         condition: eq(variables['Build.Reason'], 'PullRequest')
