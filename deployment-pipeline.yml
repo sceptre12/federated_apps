@@ -119,14 +119,7 @@ jobs:
         displayName: 'Check for changes in specific folders'
       
         # cache nx build cache
-      - task: Cache@2
-        inputs:
-          key: 'nx-cache | $(Build.SourceBranchName) | .nx/cache/run.json'
-          path: $(Build.SourcesDirectory)/.nx/cache
-          restoreKeys: |
-             nx-cache | $(Build.SourceBranchName)
-        displayName: Cache Nx Cache
-        continueOnError: true
+      
         
         # Runs Deployment tasks based on changes in apps/shell
       - script: | 
@@ -142,11 +135,21 @@ jobs:
       - script: | 
          pnpx nx build home-spa
         condition: and(succeeded(), eq(variables['home_spa_changed'], 'true'))
+        
+      - task: Cache@2
+        inputs:
+          key: 'nx-cache | $(Build.SourceBranchName) | .nx/cache/run.json'
+          path: $(Build.SourcesDirectory)/.nx/cache
+          restoreKeys: |
+             nx-cache | $(Build.SourceBranchName)
+        displayName: Cache Nx Cache
+        continueOnError: true
       
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: 'dist'
           artifact: 'build_assets'
+        condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
       
   
   - job: Deploy_Shell
