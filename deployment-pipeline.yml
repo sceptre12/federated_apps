@@ -144,6 +144,7 @@ jobs:
              nx-cache | $(Build.SourceBranchName)
         displayName: Cache Nx Cache
         continueOnError: true
+        condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
       
       - task: PublishPipelineArtifact@1
         inputs:
