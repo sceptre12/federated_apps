@@ -50,6 +50,7 @@ jobs:
           restoreKeys: |
              pnpm |  "$(Agent.OS)"
         displayName: Cache pnpm
+        continueOnError: true
       
       - script: |
          npm install --prefix=$HOME/.local -g pnpm@9.7.1 
