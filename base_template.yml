@@ -1,3 +1,4 @@
+# base_template.yml
 variables:
   CI: 'true'
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
