@@ -24,7 +24,7 @@ variables:
 
 
 jobs:
-  - job: Setup_CI_And_Dependencies
+  - job: Build_Apps
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -121,8 +121,66 @@ jobs:
           echo "##vso[task.setvariable variable=loginSpaChanged]$login_spa_changed"
           echo "##vso[task.setvariable variable=homeSpaChanged]$home_spa_changed"
         displayName: 'Check for changes in specific folders'
+      
+        # cache nx build cache
+      - task: Cache@2
+        inputs:
+          key: 'nx-cache | $(Build.SourceBranchName) | .nx/cache/run.json'
+          path: $(Build.SourcesDirectory)/.nx/cache
+          restoreKeys: |
+             nx-cache | $(Build.SourceBranchName)
+        displayName: Cache Nx Cache
+        continueOnError: true
         
         # Runs Deployment tasks based on changes in apps/shell
       - script: | 
          pnpx nx build shell
         condition: and(succeeded(), eq(variables['shellChanged'], 'true'))
+      
+        # Runs Deployment tasks based on changes in apps/login_spa
+      - script: | 
+         pnpx nx build login_spa
+        condition: and(succeeded(), eq(variables['login_spa_changed'], 'true'))
+        
+        # Runs Deployment tasks based on changes in apps/login_spa
+      - script: | 
+         pnpx nx build home-spa
+        condition: and(succeeded(), eq(variables['home_spa_changed'], 'true'))
+      
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: 'dist'
+          artifact: 'build_assets'
+      
+  
+  - job: Deploy_Shell
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: Build_Apps
+    condition: and(succeeded(), eq(variables['shellChanged'], 'true'))
+    steps: 
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          artifactName: 'build_assets'
+          targetPath: 'dist'
+      - task: Bash@3
+        inputs:
+          filePath: 'scripts/upload-script.sh'
+          arguments: 'shell-storage xdevbuildassets dist release/$(Build.BuildId)'
+        
+  - job: Deploy_Login_spa
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: Build_Apps
+    condition: and(succeeded(), eq(variables['login_spa_changed'], 'true'))
+    steps: 
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          artifactName: 'build_assets'
+          targetPath: 'dist'
+      - task: Bash@3
+        inputs:
+          filePath: 'scripts/upload-script.sh'
+          arguments: 'login-storage xdevbuildassets dist release/$(Build.BuildId)'    
+
+      
