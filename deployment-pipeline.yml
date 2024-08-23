@@ -146,7 +146,11 @@ jobs:
         continueOnError: true
         condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
       - script: |
-          echo $home_spa_changed $login_spa_changed $shellChanged
+          echo "home_spa_changed: $home_spa_changed"
+          echo "login_spa_changed: $login_spa_changed"
+          echo "shellChanged: $shellChanged"
+        displayName: "Display Variable Values"
+      
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: 'dist'
