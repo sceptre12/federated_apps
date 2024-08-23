@@ -14,7 +14,8 @@ parameters:
   type: string
   default: ""
 
-
+variables:
+  pnpm_config_cache: '$(System.DefaultWorkingDirectory)/.pnpm-store'
 
 jobs:
   - job: Setup_CI_And_Dependencies
@@ -43,7 +44,7 @@ jobs:
 
       - task: Cache@2
         inputs:
-          key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
+          key: '"$(Agent.OS)" | pnpm-lock.yaml'
           path: $(pnpm_config_cache)
           restoreKeys: |
              pnpm |  "$(Agent.OS)"
