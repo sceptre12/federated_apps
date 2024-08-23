@@ -54,7 +54,7 @@ jobs:
 
       - task: Cache@2
         inputs:
-          key: 'my-build-cache | $(Build.SourceBranchName) | package-lock.json'
+          key: 'my-build-cache | $(Build.SourceBranchName) | pnpm-lock.yaml'
           path: $(Build.SourcesDirectory)/node_modules
           restoreKeys: |
              my-build-cache | $(Build.SourceBranchName)
