@@ -13,9 +13,10 @@ parameters:
 - name: HEAD_SHA
   type: string
   default: ""
+- name: pnpm_config_cache
+  type: string:
+  default: ""
 
-variables:
-  pnpm_config_cache: '$(System.DefaultWorkingDirectory)/.pnpm-store'
 
 jobs:
   - job: Setup_CI_And_Dependencies
