@@ -1,21 +1,16 @@
-# base_template.yml
+name: CI_RUN
 
-parameters:
-- name: NX_BRANCH 
-  type: string
-  default: "" # defaults for any parameters
-- name: TARGET_BRANCH
-  type: string
-  default: ""
-- name: BASE_SHA
-  type: string
-  default: ""
-- name: HEAD_SHA
-  type: string
-  default: ""
-- name: pnpm_config_cache
-  type: string
-  default: ""
+variables:
+  CI: 'true'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    NX_BRANCH: $(System.PullRequest.PullRequestNumber)
+    TARGET_BRANCH: $[replace(variables['System.PullRequest.TargetBranch'],'refs/heads/','origin/')]
+    BASE_SHA: $(git merge-base $(TARGET_BRANCH) HEAD)
+  ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    NX_BRANCH: $(Build.SourceBranchName)
+    BASE_SHA: $(git rev-parse HEAD~1)
+  HEAD_SHA: $(git rev-parse HEAD)
+  pnpm_config_cache: '$(System.DefaultWorkingDirectory)/.pnpm-store'
 
 
 jobs:
@@ -33,10 +28,10 @@ jobs:
           LAST_SHA=$(az pipelines build list --branch $(Build.SourceBranchName) --definition-ids $(System.DefinitionId) --result succeeded --top 1 --query "[0].triggerInfo.\"ci.sourceSha\"")
           if [ -z "$LAST_SHA" ]
           then
-            echo "Last successful commit not found. Using fallback 'HEAD~1': $parameters.BASE_SHA"
+            echo "Last successful commit not found. Using fallback 'HEAD~1': $BASE_SHA"
           else
             echo "Last successful commit SHA: $LAST_SHA"
-            echo "##vso[task.setvariable variable=parameters.BASE_SHA]$LAST_SHA"
+            echo "##vso[task.setvariable variable=BASE_SHA]$LAST_SHA"
           fi
         displayName: 'Get last successful commit SHA'
         condition: ne(variables['Build.Reason'], 'PullRequest')
@@ -83,12 +78,7 @@ jobs:
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       - script: pnpm exec nx-cloud record -- echo Starting To Build Apps.
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
-      # Not working - script: pnpm exec nx affected --base=$(parameters.BASE_SHA) --head=$(parameters.HEAD_SHA) lint test build
+      # Not working - script: pnpm exec nx affected --base=$(BASE_SHA) --head=$(HEAD_SHA) lint test build
       
-      # Upload assets to pipeline artifacts so its accessible by other pipelines
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: 'node_modules'
-          artifact: 'node_modules'
-          publishLocation: 'pipeline'
+      
       
