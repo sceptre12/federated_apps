@@ -79,6 +79,40 @@ jobs:
       - script: pnpm exec nx-cloud record -- echo Starting To Build Apps.
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
       # Not working - script: pnpm exec nx affected --base=$(BASE_SHA) --head=$(HEAD_SHA) lint test build
-      
-      
-      
+      - script: |
+          echo "Checking for changes..."
+
+          # Run the git diff command to check for changes
+          changed_files=$(git diff --name-only HEAD^ HEAD)
+
+          # Initialize variables
+          shell_changed=false
+          login_spa_changed=false
+          home_spa_changed=false
+
+          # Check if specific folders have changes
+          if echo "$changed_files" | grep -q '^apps/shell/'; then
+            echo "Changes detected in apps/shell"
+            shell_changed=true
+          fi
+
+          if echo "$changed_files" | grep -q '^apps/login_spa/'; then
+            echo "Changes detected in apps/login_spa"
+            login_spa_changed=true
+          fi
+
+          if echo "$changed_files" | grep -q '^apps/home-spa/'; then
+            echo "Changes detected in apps/home-spa"
+            home_spa_changed=true
+          fi
+
+          # Set the variables for later use
+          echo "##vso[task.setvariable variable=shellChanged]$shell_changed"
+          echo "##vso[task.setvariable variable=loginSpaChanged]$login_spa_changed"
+          echo "##vso[task.setvariable variable=homeSpaChanged]$home_spa_changed"
+        displayName: 'Check for changes in specific folders'
+        
+        # Runs Deployment tasks based on changes in apps/shell
+      - script: | 
+         pnpx nx build shell
+        condition: and(succeeded(), eq(variables['shellChanged'], 'true'))
