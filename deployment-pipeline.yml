@@ -1,5 +1,15 @@
 name: CI_RUN
 
+trigger: 
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - apps/shell
+    - apps/home-spa
+    - apps/login_spa
+
 variables:
   CI: 'true'
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
