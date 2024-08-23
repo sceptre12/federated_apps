@@ -1,14 +1,20 @@
 # base_template.yml
-variables:
-  CI: 'true'
-  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-    NX_BRANCH: $(System.PullRequest.PullRequestNumber)
-    TARGET_BRANCH: $[replace(variables['System.PullRequest.TargetBranch'],'refs/heads/','origin/')]
-    BASE_SHA: $(git merge-base $(TARGET_BRANCH) HEAD)
-  ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-    NX_BRANCH: $(Build.SourceBranchName)
-    BASE_SHA: $(git rev-parse HEAD~1)
-  HEAD_SHA: $(git rev-parse HEAD)
+
+parameters:
+- name: NX_BRANCH 
+  type: string
+  default: "" # defaults for any parameters
+- name: TARGET_BRANCH
+  type: string
+  default: ""
+- name: BASE_SHA
+  type: string
+  default: ""
+- name: HEAD_SHA
+  type: string
+  default: ""
+
+
 
 jobs:
   - job: Setup_CI_And_Dependencies
