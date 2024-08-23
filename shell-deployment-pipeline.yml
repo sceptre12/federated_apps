@@ -41,6 +41,6 @@ stages:
           buildType: 'current'
           artifactName: 'node_modules'
           targetPath: '$(Pipeline.Workspace)'
-      - script: pnpx nx build shell
+      - script: which pnpm
 
 
