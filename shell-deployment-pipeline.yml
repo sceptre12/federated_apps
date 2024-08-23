@@ -15,6 +15,7 @@ variables:
     NX_BRANCH: $(Build.SourceBranchName)
     BASE_SHA: $(git rev-parse HEAD~1)
   HEAD_SHA: $(git rev-parse HEAD)
+  pnpm_config_cache: '$(System.DefaultWorkingDirectory)/.pnpm-store'
 
       
 pool:
@@ -29,6 +30,7 @@ stages:
       TARGET_BRANCH: TARGET_BRANCH
       BASE_SHA: BASE_SHA
       HEAD_SHA: HEAD_SHA
+      pnpm_config_cache: pnpm_config_cache
 
 - stage: Build_Shell
   jobs: 
