@@ -15,7 +15,7 @@ const config: ModuleFederationConfig = {
    *
    */
   remotes: [
-    ['home-spa', 'http://localhost:4201']
+    // ['home-spa', 'http://localhost:4201']
   ],
 };
 

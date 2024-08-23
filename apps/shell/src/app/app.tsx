@@ -4,7 +4,7 @@ import NxWelcome from './nx-welcome';
 
 import { Link, Route, Routes } from 'react-router-dom';
 
-const HomeSpa = React.lazy(() => import('home-spa/Module'));
+// const HomeSpa = React.lazy(() => import('home-spa/Module'));
 
 export function App() {
   return (
@@ -17,10 +17,10 @@ export function App() {
           <Link to="/home-spa">HomeSpa</Link>
         </li>
       </ul>
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<NxWelcome title="shell" />} />
         <Route path="/home-spa" element={<HomeSpa />} />
-      </Routes>
+      </Routes> */}
     </React.Suspense>
   );
 }
