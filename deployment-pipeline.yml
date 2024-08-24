@@ -129,12 +129,12 @@ jobs:
         # Runs Deployment tasks based on changes in apps/login_spa
       - script: | 
          pnpx nx build login_spa
-        condition: and(succeeded(), eq(variables['login_spa_changed'], 'true'))
+        condition: and(succeeded(), eq(variables['loginSpaChanged'], 'true'))
         
         # Runs Deployment tasks based on changes in apps/login_spa
       - script: | 
          pnpx nx build home-spa
-        condition: and(succeeded(), eq(variables['home_spa_changed'], 'true'))
+        condition: and(succeeded(), eq(variables['homeSpaChanged'], 'true'))
         
       - task: Cache@2
         inputs:
@@ -144,18 +144,13 @@ jobs:
              nx-cache | $(Build.SourceBranchName)
         displayName: Cache Nx Cache
         continueOnError: true
-        condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
-      - script: |
-          echo "home_spa_changed: $home_spa_changed"
-          echo "login_spa_changed: $login_spa_changed"
-          echo "shellChanged: $shellChanged"
-        displayName: "Display Variable Values"
+        condition: or(succeeded(), eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
       
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: 'dist'
           artifact: 'build_assets'
-        condition: or(succeeded(), eq(variables['home_spa_changed'], 'true'), eq(variables['login_spa_changed'], 'true'), eq(variables['shellChanged'], 'true'))
+        condition: or(succeeded(), eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
       
   
   - job: Deploy_Shell
@@ -177,7 +172,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: Build_Apps
-    condition: and(succeeded(), eq(variables['login_spa_changed'], 'true'))
+    condition: and(succeeded(), eq(variables['loginSpaChanged'], 'true'))
     steps: 
       - task: DownloadPipelineArtifact@2
         inputs:
