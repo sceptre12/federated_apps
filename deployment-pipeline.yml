@@ -120,7 +120,7 @@ jobs:
       
         # Reset NX cache
       - script: |
-          nx reset
+          pnpx nx reset
         displayName: 'Reset Nx Cache'
 
         
