@@ -118,8 +118,6 @@ jobs:
           echo "##vso[task.setvariable variable=homeSpaChanged]$home_spa_changed"
         displayName: 'Check for changes in specific folders'
       
-        # cache nx build cache
-      
         
         # Runs Deployment tasks based on changes in apps/shell
       - script: | 
@@ -136,15 +134,16 @@ jobs:
          pnpx nx build home-spa
         condition: and(succeeded(), eq(variables['homeSpaChanged'], 'true'))
         
-      - task: Cache@2
-        inputs:
-          key: 'nx-cache | $(Build.SourceBranchName)'
-          path: $(Build.SourcesDirectory)/.nx/cache
-          restoreKeys: |
-             nx-cache | $(Build.SourceBranchName)
-        displayName: Cache Nx Cache
-        continueOnError: true
-        condition: or(succeeded(), eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
+        # cache nx build cache
+      # - task: Cache@2
+      #   inputs:
+      #     key: 'nx-cache | $(Build.SourceBranchName)'
+      #     path: $(Build.SourcesDirectory)/.nx/cache
+      #     restoreKeys: |
+      #        nx-cache | $(Build.SourceBranchName)
+      #   displayName: Cache Nx Cache
+      #   continueOnError: true
+      #   condition: or(succeeded(), eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
       
       - task: PublishPipelineArtifact@1
         inputs:
