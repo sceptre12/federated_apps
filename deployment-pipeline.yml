@@ -126,7 +126,7 @@ jobs:
         
         # Runs Deployment tasks based on changes in apps/shell
       - script: | 
-         pnpx nx build shell
+         pnpx nx build shell -- --verbose
         condition: and(succeeded(), eq(variables['shellChanged'], 'true'))
       
         # Runs Deployment tasks based on changes in apps/login_spa
