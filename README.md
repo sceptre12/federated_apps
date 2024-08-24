@@ -1,3 +1,11 @@
+Ran into several issues with NX, Zephyr, and Azure pipeline deveops.
+
+In short:
+- Trying to run pnpx nx build shell failed due to the project graph failing
+- I'm not sure pnpm works well with NX. Some of the default CLI options don't pop up when using pnpm. 
+- I was running into build issues with Zephyy where my build ID could not be found.
+- This is my first time working with a cloud CI pipeline and.. The Azure devops pipeline misses at a few important areas
+
 # FederatedApps
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
