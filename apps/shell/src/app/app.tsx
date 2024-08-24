@@ -14,7 +14,7 @@ export function App() {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/home-spa">HomeSpaRouteSS</Link>
+          <Link to="/home-spa">HomeSpaRouteSssS</Link>
         </li>
       </ul>
       {/* <Routes>
