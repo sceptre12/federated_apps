@@ -150,7 +150,7 @@ jobs:
         inputs:
           targetPath: 'dist'
           artifact: 'build_assets'
-        condition: or(succeeded(), eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
+        condition: or(eq(variables['shellChanged'], 'true'), eq(variables['loginSpaChanged'], 'true'), eq(variables['homeSpaChanged'], 'true'))
       
   
   - job: Deploy_Shell
